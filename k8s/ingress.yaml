@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: punitxd-hello-fly
+  namespace: kairo-punitxd-hello-fly
+  labels:
+    app: punitxd-hello-fly
+    app.kubernetes.io/managed-by: kairo
+spec:
+  # Traefik is the only way in. It answers on localhost:80, and the app's
+  # public link (a Cloudflare tunnel) points at it with this Host header
+  ingressClassName: traefik
+  rules:
+    - host: punitxd-hello-fly.kairo.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: punitxd-hello-fly
+                port:
+                  number: 80

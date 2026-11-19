@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: punitxd-hello-fly
+  namespace: kairo-punitxd-hello-fly
+  labels:
+    app: punitxd-hello-fly
+    app.kubernetes.io/managed-by: kairo
+spec:
+  # cluster-internal only: all outside traffic comes in through Traefik's
+  # Ingress, so request metrics are always counted
+  type: ClusterIP
+  selector:
+    app: punitxd-hello-fly
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

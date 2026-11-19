@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: punitxd-hello-fly
+  namespace: kairo-punitxd-hello-fly
+  labels:
+    app: punitxd-hello-fly
+    app.kubernetes.io/managed-by: kairo
+spec:
+  replicas: 1
+  # rollback needs old ReplicaSets to still be around
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: punitxd-hello-fly
+  template:
+    metadata:
+      labels:
+        app: punitxd-hello-fly
+        app.kubernetes.io/managed-by: kairo
+    spec:
+      containers:
+        - name: punitxd-hello-fly
+          image: kairo/punitxd-hello-fly:9d5612f0c9b3af780f62a777cfa4b4c263bf373c
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          # liveness + memory limit are what make self-healing possible.
+          # don't remove them without talking to BE 2
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
